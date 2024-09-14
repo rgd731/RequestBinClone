@@ -1,10 +1,19 @@
 const router = require("express").Router();
-
+const mongoDb = require("../model/mongo/mongoDb");
+const pgDb = require("../model/pg/pg");
 let dataStore = {};
 
-router.get("/", (req, res) => {
-  return res.status(200).send("<h1>Hello Team 6!</h1>");
-});
+const getAllData = async (req, res) => {
+  const pgData = await pgDb.allData();
+  const mongoData = await mongoDb.getKeys();
+
+  res.send({ postgres: pgData, mongo: mongoData });
+};
+
+router.get("/", getAllData);
+
+// Route: '/create' => Create a new key (Initialize it with an empty array)
+router.post("/", mongoDb.addTestKey);
 
 router.get("/:key", (req, res) => {
   const key = req.params.key;
@@ -43,22 +52,6 @@ router.delete("/:key/delete", (req, res) => {
 
   delete dataStore[key];
   res.send(`All events for key: ${key} have been deleted.`);
-});
-
-// Route: '/create' => Create a new key (Initialize it with an empty array)
-router.post("/create", (req, res) => {
-  const key = req.body.key;
-
-  if (!key) {
-    return res.status(400).send("Key is required.");
-  }
-
-  if (dataStore[key]) {
-    return res.status(400).send("Key already exists.");
-  }
-
-  dataStore[key] = [];
-  res.status(201).send(`Key '${key}' created.`);
 });
 
 module.exports = router;
