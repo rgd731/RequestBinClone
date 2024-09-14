@@ -1,0 +1,35 @@
+require("dotenv").config();
+const { Client } = require("pg");
+
+const client = new Client({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
+});
+
+client
+  .connect()
+  .then(() => console.log("Connected to PostgreSQL"))
+  .catch((err) => console.error(err, "Error Connection to PostgreSQL"));
+
+const allData = async () => {
+  const query = {
+    name: "fetch all data",
+    text: `SELECT bin.url, requests.request
+            FROM bin
+            LEFT JOIN requests 
+            ON bin.id = requests.bin_id`,
+  };
+
+  try {
+    const data = await client.query(query);
+    return data.rows;
+  } catch (error) {
+    console.error(error.message);
+    return error.message;
+  }
+};
+
+module.exports = { allData };
