@@ -32,4 +32,22 @@ const allData = async () => {
   }
 };
 
-module.exports = { allData };
+const allDataWithKeys = async () => {
+  const query = {
+    name: "fetch all data with keys",
+    text: `SELECT bin.*, requests.request
+            FROM bin
+            LEFT JOIN requests
+            ON bin.id = requests.bin_id`,
+  };
+
+  try {
+    const data = await client.query(query);
+    return data.rows;
+  } catch (error) {
+    console.error(error.message);
+    return error.message;
+  }
+}
+
+module.exports = { allData, allDataWithKeys };
