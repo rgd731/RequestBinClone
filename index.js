@@ -4,12 +4,13 @@ const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const keyRouter = require("./controller/keyRouter");
+const viewRouter = require("./controller/viewRouter");
 
 app.use(bodyParser.json());
 app.use(cors());
 
 app.use("/", keyRouter);
-// app.use("/view");
+app.use("/view", viewRouter);
 
 const PORT = process.env.PORT || 3000;
 
