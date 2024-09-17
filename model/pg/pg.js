@@ -50,4 +50,21 @@ const allDataWithKeys = async () => {
   }
 }
 
+const createBin = async () => {
+    //const key = generateKey();
+    const query = {
+      name: "create a bin with generated key",
+      text: `INSERT INTO bin (bin_key)
+             VALUES (${key})`,
+    };
+  
+    try {
+      const data = await client.query(query);
+      return key;
+    } catch (error) {
+      console.error(error.message);
+      return error.message;
+    }
+  }
+
 module.exports = { allData, allDataWithKeys };
