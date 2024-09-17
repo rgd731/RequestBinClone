@@ -10,6 +10,8 @@ const getAllData = async (req, res) => {
   res.send({ postgres: pgData, mongo: mongoData });
 };
 
+router.get("/create", pgDb.createBin);
+
 router.get("/", getAllData);
 
 // Route: '/create' => Create a new key (Initialize it with an empty array)
