@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 
 const testSchema = new mongoose.Schema({
-  key: { type: String, minLength: 2, required: [true, " key required"] },
+  method: { type: String, required: true },
+  path: { type: String, required: true },
+  headers: { type: Array, required: true }
 });
 
 testSchema.set("toJSON", {

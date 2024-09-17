@@ -29,7 +29,24 @@ const getKeys = async () => {
   return keys;
 };
 
+const getMongoData = async () => {
+  const data = await Test.find().exec();
+
+  return data;
+}
+
+const fetchDocumentsById = async (ids) => {
+  try {
+      const documents = await Test.find({ _id: { $in: ids } }).exec();
+      return documents;
+  } catch (err) {
+      console.error(err);
+  }
+}
+
 module.exports = {
   addTestKey,
   getKeys,
+  getMongoData,
+  fetchDocumentsById,
 };
