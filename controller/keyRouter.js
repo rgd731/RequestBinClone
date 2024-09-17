@@ -5,7 +5,7 @@ let dataStore = {};
 
 const getAllData = async (req, res) => {
   const pgData = await pgDb.allData();
-  const mongoData = await mongoDb.getKeys();
+  const mongoData = await mongoDb.getMongoData();
 
   res.send({ postgres: pgData, mongo: mongoData });
 };

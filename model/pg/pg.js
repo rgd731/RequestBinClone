@@ -18,7 +18,7 @@ client
 const allData = async () => {
   const query = {
     name: "fetch all data",
-    text: `SELECT bin.url, requests.request
+    text: `SELECT bin_key, requests.mongo_doc_id
             FROM bin
             LEFT JOIN requests 
             ON bin.id = requests.bin_id`,
@@ -36,7 +36,7 @@ const allData = async () => {
 const allDataWithKeys = async () => {
   const query = {
     name: "fetch all data with keys",
-    text: `SELECT bin.*, requests.request
+    text: `SELECT bin.*, requests.*
             FROM bin
             LEFT JOIN requests
             ON bin.id = requests.bin_id`,
