@@ -1,4 +1,5 @@
 require("dotenv").config();
+const generateKey = require("../utils/generateKey.js")
 const { Client } = require("pg");
 
 const client = new Client({
@@ -51,20 +52,20 @@ const allDataWithKeys = async () => {
 }
 
 const createBin = async () => {
-    //const key = generateKey();
+    const bin_key = generateKey();
     const query = {
       name: "create a bin with generated key",
       text: `INSERT INTO bin (bin_key)
-             VALUES (${key})`,
+             VALUES (${bin_key})`,
     };
   
     try {
-      const data = await client.query(query);
-      return key;
+      await client.query(query);
+      return bin_key;
     } catch (error) {
       console.error(error.message);
       return error.message;
     }
   }
 
-module.exports = { allData, allDataWithKeys };
+module.exports = { allData, allDataWithKeys, createBin};
