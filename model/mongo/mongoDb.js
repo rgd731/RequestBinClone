@@ -1,6 +1,6 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
-const Test = require("./requestPayload");
+const requestPayload = require("./requestPayload");
 
 const mongoDbUrl = process.env.MONGO_URI;
 
@@ -13,40 +13,40 @@ mongoose
     console.log("MongoDB Connection Failed!");
   });
 
-const addTestKey = async (req, res) => {
-  const testKey = new Test({
-    key: req.body.key,
+const addRequestPayload = async (req) => {
+  const requestLog = new requestPayload({
+    method: req.method,
+    path: req.originalUrl,
+    headers: req.headers,
+    body: req.body,
   });
 
-  const result = await testKey.save();
-
-  res.json(result);
-};
-
-const getKeys = async () => {
-  const keys = await Test.find().exec();
-
-  return keys;
+  try {
+    await requestLog.save();
+    console.log("Request logged successfully");
+  } catch (error) {
+    console.error("Error logging request:", error);
+  }
+  return requestLog.id;
 };
 
 const getMongoData = async () => {
-  const data = await Test.find().exec();
+  const data = await requestPayload.find().exec();
 
   return data;
-}
+};
 
 const fetchDocumentsById = async (ids) => {
   try {
-      const documents = await Test.find({ _id: { $in: ids } }).exec();
-      return documents;
+    const documents = await requestPayload.find({ _id: { $in: ids } }).exec();
+    return documents;
   } catch (err) {
-      console.error(err);
+    console.error(err);
   }
-}
+};
 
 module.exports = {
-  addTestKey,
-  getKeys,
-  getMongoData,
+  addRequestPayload,
   fetchDocumentsById,
+  getMongoData,
 };

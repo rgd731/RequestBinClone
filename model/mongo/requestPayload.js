@@ -1,12 +1,14 @@
 const mongoose = require("mongoose");
 
-const testSchema = new mongoose.Schema({
-  method: { type: String, required: true },
-  path: { type: String, required: true },
-  headers: { type: Array, required: true }
+const requestSchema = new mongoose.Schema({
+  method: String,
+  path: String,
+  headers: Object,
+  body: Object,
+  query: Object,
 });
 
-testSchema.set("toJSON", {
+requestSchema.set("toJSON", {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
 
@@ -15,4 +17,4 @@ testSchema.set("toJSON", {
   },
 });
 
-module.exports = mongoose.model("Test", testSchema);
+module.exports = mongoose.model("Request", requestSchema);
