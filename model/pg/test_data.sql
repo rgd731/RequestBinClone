@@ -1,4 +1,4 @@
-DROP TABLE requests;
+DROP TABLE events;
 DROP TABLE bin;
 
 CREATE TABLE bin (

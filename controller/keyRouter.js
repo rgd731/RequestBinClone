@@ -15,8 +15,6 @@ const requestLog = async (req, res) => {
   }
 };
 
-router.all("/:bin_key", requestLog);
-
 router.get("/create", async (req, res) => {
   try {
     const bin_key = await pgDb.createBin();
@@ -28,43 +26,48 @@ router.get("/create", async (req, res) => {
 
 router.get("/events", pgDb.getAllEvents);
 
-// router.get("/:key", (req, res) => {
-//   const key = req.params.key;
+// Route: '/:bin_key/delete' => Delete all events for a specific key
+router.delete("/:bin_key/delete", async (req, res) => {
+  // get bin Id based on the bin key
+  // get all events tied to the bin Id
+  // get all mongoIds from those events
+  // delete all documents in mongo tied to those mongoIds
+  // delete all events for a bin
+  // delete bin
 
-//   if (!dataStore[key]) {
-//     return res.status(404).send("No events found for this key.");
-//   }
+  let binKey = req.params.bin_key;
+  let binId = await pgDb.getIdByBin(binKey);
 
-//   res.json(dataStore[key]);
-// });
+  let events = await pgDb.getEventsByBin(binId);
+  let mongoIds = events.map(event => event.mongo_doc_id);
+  let mongoDbResult = await mongoDb.deleteDocumentsByIds(mongoIds);
+  let deleteEventsResult = await pgDb.deleteEventsByBinId(binId);
+  let deleteBinResult = await pgDb.deleteBin(binId);
 
-// router.get("/:key/:event_id", (req, res) => {
-//   const key = req.params.key;
-//   const eventId = parseInt(req.params.event_id);
+  if (!mongoDbResult || !deleteEventsResult || !deleteBinResult) {
+    res.status(500).send("Something went wrong when deleting event");
+  } else {
+    res.status(200).send("Bin and its events deleted successfully");
+  }
+});
 
-//   if (!dataStore[key]) {
-//     return res.status(404).send("Key not found.");
-//   }
+// Route: '/:bin_key/delete' => Delete one event from a specific key
+router.delete("/:bin_key/delete/:eventId", async (req, res) => {
+  let eventId = req.params.eventId;
+  let event = await pgDb.getEventById(eventId);
+  let mongoDocId = event.mongo_doc_id;
 
-//   const event = dataStore[key].find((e) => e.id === eventId);
+  let mongoDbResult = await mongoDb.deleteById(mongoDocId);
+  let pgDbResult = await pgDb.deleteEvent(eventId)
 
-//   if (!event) {
-//     return res.status(404).send("Event not found.");
-//   }
+  if (!mongoDbResult || !pgDbResult) {
+    res.status(500).send("Something went wrong when deleting event")
+  } else {
+    res.status(200).send("Event deleted successfully")
+  }
 
-//   res.json(event);
-// });
+});
 
-// // Route: '/:key/delete' => Delete all events for a specific key
-// router.delete("/:key/delete", (req, res) => {
-//   const key = req.params.key;
-
-//   if (!dataStore[key]) {
-//     return res.status(404).send("Key not found.");
-//   }
-
-//   delete dataStore[key];
-//   res.send(`All events for key: ${key} have been deleted.`);
-// });
+router.all("/:bin_key", requestLog);
 
 module.exports = router;

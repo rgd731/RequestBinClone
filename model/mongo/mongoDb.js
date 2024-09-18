@@ -30,6 +30,24 @@ const addRequestPayload = async (req) => {
   return requestLog.id;
 };
 
+const deleteDocumentsByIds = async (ids) => {
+  // Convert string IDs to mongoose ObjectId instances
+  const objectIds = ids.map(id => new mongoose.Types.ObjectId(id));
+
+  try {
+    const result = await requestPayload.deleteMany({
+      _id: { $in: objectIds }
+    });
+
+    console.log(`${result.deletedCount} documents deleted.`);
+    console.log(result);
+    return result;
+  } catch (err) {
+    console.error('Error deleting documents:', err);
+    throw err;
+  }
+};
+
 const getMongoData = async () => {
   const data = await requestPayload.find().exec();
 
@@ -45,8 +63,24 @@ const fetchDocumentsById = async (ids) => {
   }
 };
 
+const deleteById = async(id) => {
+  try {
+    const result = await requestPayload.findByIdAndDelete(id);
+    if (result) {
+      console.log("Document successfully deleted: ", result);
+      return true;
+    } else {
+      console.log("No document found");
+    }
+  } catch (error) {
+    console.log("Error deleting document:", error);
+  }
+}
+
 module.exports = {
   addRequestPayload,
   fetchDocumentsById,
   getMongoData,
+  deleteById,
+  deleteDocumentsByIds,
 };
