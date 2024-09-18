@@ -1,19 +1,32 @@
 const router = require("express").Router();
 const mongoDb = require("../model/mongo/mongoDb");
 const pgDb = require("../model/pg/pg");
-let dataStore = {};
 
-const getAllData = async (req, res) => {
-  const pgData = await pgDb.allData();
-  const mongoData = await mongoDb.getKeys();
+const requestLog = async (req, res) => {
+  const bin_key = req.params.bin_key;
 
-  res.send({ postgres: pgData, mongo: mongoData });
+  try {
+    const bin = await pgDb.getBinById(bin_key);
+    const payload_id = await mongoDb.addRequestPayload(req);
+    await pgDb.createEvent(payload_id, bin.id);
+    res.status(200).send();
+  } catch (error) {
+    console.error(error.message);
+  }
 };
 
-router.get("/", getAllData);
+router.all("/:bin_key", requestLog);
 
-// Route: '/create' => Create a new key (Initialize it with an empty array)
-router.post("/", mongoDb.addTestKey);
+router.get("/create", async (req, res) => {
+  try {
+    const bin_key = await pgDb.createBin();
+    res.send({ bin_key: bin_key });
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+router.get("/events", pgDb.getAllEvents);
 
 // router.get("/:key", (req, res) => {
 //   const key = req.params.key;

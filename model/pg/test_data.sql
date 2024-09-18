@@ -1,28 +1,37 @@
+DROP TABLE requests;
+DROP TABLE bin;
+
 CREATE TABLE bin (
 id serial PRIMARY KEY,
-url varchar(50) UNIQUE NOT NULL);
+bin_key varchar(50) UNIQUE NOT NULL
+);
 
-CREATE TABLE requests (
+CREATE TABLE events (
 id serial PRIMARY KEY,
-request varchar(30),
+received_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+mongo_doc_id varchar,
 bin_id int REFERENCES bin(id));
 
 
-INSERT INTO bin(url)
-VALUES ('https://eerWS@test.com'),
-        ('https://eerW44S@test.com'),
-        ('https://zerW44S@test.com');
+INSERT INTO bin(bin_key) 
+VALUES ('eerWS'),
+        ('eerW44S'),
+        ('zerW44S'),
+        ('dg4s5d');
 
-INSERT INTO requests (request, bin_id)
-VALUES ('test1', 1), ('test2', 4), ('test3', 1), ('test4', 3)
+INSERT INTO events (mongo_doc_id, bin_id)
+VALUES ('g-98g7s9', 5), 
+        ('f-0fdf9h0', 6), 
+        ('d-f6h546', 7), 
+        ('x-c5x5cb4', 8);
 
 
 SELECT 
-    bin.url,
-    requests.request
+    bin.bin_key,
+    events.mongo_doc_id
 FROM 
     bin
 LEFT JOIN 
-    requests 
+    events 
 ON 
-    bin.id = requests.bin_id;
+    bin.id = events.bin_id;
