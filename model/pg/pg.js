@@ -134,7 +134,8 @@ const allDataWithKeys = async () => {
               bin.bin_key,
               events.mongo_doc_id,
               events.received_at,
-              events.bin_id
+              events.bin_id,
+              events.id
             FROM 
                 bin
             LEFT JOIN 

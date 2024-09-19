@@ -1,7 +1,15 @@
 const router = require("express").Router();
 const mongoDb = require("../model/mongo/mongoDb");
 const pgDb = require("../model/pg/pg");
-let dataStore = {};
+
+// Format the timestamps in each object
+const formatTimestamp = (timestamp) => {
+  const date = new Date(timestamp);
+  return new Intl.DateTimeFormat('en-US', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  }).format(date);
+};
 
 router.all("/", (req, res) => {
   res.status(200).end();
@@ -40,6 +48,10 @@ router.get("/:bin_key", async (req, res) => {
     });
   }
 
+  dataToBeSent = dataToBeSent.map(entry => ({
+    ...entry,
+    timestamp: formatTimestamp(entry.timestamp),
+  }));
   // Send the data in the format:
 
   // { id:,
