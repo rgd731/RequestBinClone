@@ -26,15 +26,8 @@ router.get("/create", async (req, res) => {
 
 router.get("/events", pgDb.getAllEvents);
 
-// Route: '/:bin_key/delete' => Delete all events for a specific key
-router.delete("/:bin_key/delete", async (req, res) => {
-  // get bin Id based on the bin key
-  // get all events tied to the bin Id
-  // get all mongoIds from those events
-  // delete all documents in mongo tied to those mongoIds
-  // delete all events for a bin
-  // delete bin
-
+// Delete all events for a specific key
+router.delete("/deleteall/:bin_key", async (req, res) => {
   let binKey = req.params.bin_key;
   let binId = await pgDb.getIdByBin(binKey);
 
@@ -42,7 +35,6 @@ router.delete("/:bin_key/delete", async (req, res) => {
   let mongoIds = events.map(event => event.mongo_doc_id);
   let mongoDbResult = await mongoDb.deleteDocumentsByIds(mongoIds);
   let deleteEventsResult = await pgDb.deleteEventsByBinId(binId);
-  let deleteBinResult = await pgDb.deleteBin(binId);
 
   if (!mongoDbResult || !deleteEventsResult || !deleteBinResult) {
     res.status(500).send("Something went wrong when deleting event");
@@ -51,8 +43,8 @@ router.delete("/:bin_key/delete", async (req, res) => {
   }
 });
 
-// Route: '/:bin_key/delete' => Delete one event from a specific key
-router.delete("/:bin_key/delete/:eventId", async (req, res) => {
+// Delete one event from a specific key
+router.delete("/delete/:eventId", async (req, res) => {
   let eventId = req.params.eventId;
   let event = await pgDb.getEventById(eventId);
   let mongoDocId = event.mongo_doc_id;
