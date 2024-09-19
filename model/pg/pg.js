@@ -1,6 +1,6 @@
 require("dotenv").config();
 const { Client } = require("pg");
-const generateKey = require("../../utils/generateKeys");
+const generateKey = require("../../utils/generateKey");
 
 const client = new Client({
   user: process.env.DB_USER,
@@ -141,7 +141,8 @@ const allDataWithKeys = async () => {
             LEFT JOIN 
                 events 
             ON 
-              bin.id = events.bin_id;`,
+              bin.id = events.bin_id
+            ORDER BY events.received_at ASC;`,
   };
 
   try {
