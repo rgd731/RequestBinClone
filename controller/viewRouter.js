@@ -3,10 +3,6 @@ const mongoDb = require("../model/mongo/mongoDb");
 const pgDb = require("../model/pg/pg");
 let dataStore = {};
 
-router.all("/", (req, res) => {
-  res.status(200).end();
-});
-
 router.get("/:bin_key", async (req, res) => {
   const bin_key = req.params.bin_key;
   const allPgData = await pgDb.allDataWithKeys();
@@ -53,10 +49,6 @@ router.get("/:bin_key", async (req, res) => {
   res.send(dataToBeSent);
 });
 
-router.all("/", (req, res) => {
-  res.status(200).end();
-});
-
 // router.get("/:key/:event_id", (req, res) => {
 //   const key = req.params.key;
 //   const eventId = parseInt(req.params.event_id);
@@ -85,5 +77,9 @@ router.all("/", (req, res) => {
 //   delete dataStore[key];
 //   res.send(`All events for key: ${key} have been deleted.`);
 // });
+
+router.all("/", (req, res) => {
+  res.status(200).end();
+});
 
 module.exports = router;
